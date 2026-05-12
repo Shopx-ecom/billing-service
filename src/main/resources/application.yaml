@@ -1,3 +1,50 @@
+server:
+  port: 9090
+
 spring:
   application:
-    name: billing
+    name: payment-service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: payment-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.shopx.billing.PaymentEvent
+
+  datasource:
+    url: jdbc:h2:file:./data/mydb
+    driver-class-name: org.h2.Driver
+    username: sam
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+springdoc:
+  swagger-ui:
+    enabled: true
+  version: 2.6.7
+  api-docs:
+    enabled: true
+  show-login-endpoint: false
+
+services:
+  product:
+    url: http://localhost:9020
