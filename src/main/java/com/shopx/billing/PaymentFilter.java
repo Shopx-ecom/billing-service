@@ -1,11 +1,13 @@
 package com.shopx.billing;
 
-import com.shopx.billing.core.enums.PaymentMethod;
-import com.shopx.billing.core.enums.PaymentStatus;
+import com.shopx.common.enums.PaymentMethod;
+import com.shopx.common.enums.PaymentStatus;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
+@Builder
 @Data
 public class PaymentFilter {
 

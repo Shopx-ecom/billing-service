@@ -1,11 +1,12 @@
 package com.shopx.billing.processor;
 
 import com.shopx.billing.Payment;
-import com.shopx.billing.PaymentEvent;
 import com.shopx.billing.Paymentservice;
-import com.shopx.billing.core.enums.PaymentStatus;
+import com.shopx.common.enums.PaymentStatus;
+import com.shopx.common.event.PaymentEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PendingPaymentProcessor implements PaymentProcessor{
 
-    private final Paymentservice paymentservice;
 
     @Override
     public PaymentStatus getType() {
@@ -29,19 +29,6 @@ public class PendingPaymentProcessor implements PaymentProcessor{
     @Override
     public void process(PaymentEvent paymentEvent) {
 
-        Payment payment = Payment.builder()
-                .orderId(paymentEvent.getOrderId())
-                .customerId(paymentEvent.getCustomerId())
-                .status(paymentEvent.getStatus())
-                .amount(paymentEvent.getAmount())
-                .currency(paymentEvent.getCurrency())
-                .paymentMethod(paymentEvent.getPaymentMethod())
-                .currency(paymentEvent.getCurrency())
-                .build();
-
-        Payment paymentStored =  paymentservice.create(payment);
-
-        log.info("Payment created : {}",paymentStored.toString());
 
     }
 }

@@ -37,7 +37,7 @@ public class GlobalConfig {
     }*/
 
     @Bean
-    public KafkaTemplate<String, PaymentEvent> kafkaTemplate() {
+    public KafkaTemplate<String, com.shopx.common.event.PaymentEvent> kafkaTemplate() {
 
         Map<String, Object> config = new HashMap<>();
 
@@ -45,7 +45,7 @@ public class GlobalConfig {
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
-        ProducerFactory<String, PaymentEvent> producerFactory =
+        ProducerFactory<String, com.shopx.common.event.PaymentEvent> producerFactory =
                 new DefaultKafkaProducerFactory<>(config);
 
         return new KafkaTemplate<>(producerFactory);

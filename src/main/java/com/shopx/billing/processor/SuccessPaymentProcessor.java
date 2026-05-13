@@ -1,12 +1,16 @@
 package com.shopx.billing.processor;
 
-import com.shopx.billing.Payment;
-import com.shopx.billing.PaymentEvent;
-import com.shopx.billing.core.enums.PaymentStatus;
+import com.shopx.common.enums.PaymentStatus;
+import com.shopx.billing.kafka.PaymentEventPublisher;
+import com.shopx.common.event.PaymentEvent;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
 @Component
 public class SuccessPaymentProcessor implements PaymentProcessor {
+
+    private final PaymentEventPublisher paymentEventPublisher;
 
     @Override
     public PaymentStatus getType() {
@@ -16,7 +20,7 @@ public class SuccessPaymentProcessor implements PaymentProcessor {
     @Override
     public void process(PaymentEvent paymentEvent) {
 
-        System.out.println("Payment Success");
+       paymentEventPublisher.publish(paymentEvent);
 
     }
 }

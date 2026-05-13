@@ -1,7 +1,7 @@
 package com.shopx.billing.dto;
 
-import com.shopx.billing.core.enums.PaymentMethod;
-import com.shopx.billing.core.enums.PaymentStatus;
+import com.shopx.common.enums.PaymentMethod;
+import com.shopx.common.enums.PaymentStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;

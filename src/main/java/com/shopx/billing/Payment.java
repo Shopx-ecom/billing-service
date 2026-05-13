@@ -1,8 +1,8 @@
 package com.shopx.billing;
 
 import com.shopx.billing.core.BaseEntity;
-import com.shopx.billing.core.enums.PaymentStatus;
-import com.shopx.billing.core.enums.PaymentMethod;
+import com.shopx.common.enums.PaymentMethod;
+import com.shopx.common.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -34,7 +34,7 @@ public class Payment extends BaseEntity {
     @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
-    @Column(name = "transaction_id", unique = true)
+    @Column(name = "transaction_id")
     private String transactionId;
 
     @Column(name = "failure_reason")

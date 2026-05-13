@@ -1,6 +1,6 @@
 package com.shopx.billing;
 
-import com.shopx.billing.core.enums.PaymentStatus;
+import com.shopx.common.enums.PaymentStatus;
 import com.shopx.billing.dto.PaymentRequestDto;
 import com.shopx.billing.dto.PaymentResponseDto;
 import com.shopx.billing.dto.PaymentUpdateDto;

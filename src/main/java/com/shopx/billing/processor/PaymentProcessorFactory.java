@@ -1,6 +1,8 @@
 package com.shopx.billing.processor;
 
-import com.shopx.billing.core.enums.PaymentStatus;
+import com.shopx.common.enums.PaymentStatus;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

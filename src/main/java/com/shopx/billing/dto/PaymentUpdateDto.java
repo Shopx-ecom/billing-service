@@ -1,7 +1,7 @@
 package com.shopx.billing.dto;
 
-import com.shopx.billing.core.enums.PaymentMethod;
-import com.shopx.billing.core.enums.PaymentStatus;
+import com.shopx.common.enums.PaymentMethod;
+import com.shopx.common.enums.PaymentStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;

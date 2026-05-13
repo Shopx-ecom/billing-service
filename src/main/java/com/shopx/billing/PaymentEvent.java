@@ -1,7 +1,7 @@
 package com.shopx.billing;
 
-import com.shopx.billing.core.enums.PaymentMethod;
-import com.shopx.billing.core.enums.PaymentStatus;
+import com.shopx.common.enums.PaymentMethod;
+import com.shopx.common.enums.PaymentStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class PaymentEvent {
 
-    private String eventType;       // payment.success | payment.failed
+    private String topic;       // payment.success | payment.failed
     private Long paymentId;
     private Long orderId;
     private Long customerId;

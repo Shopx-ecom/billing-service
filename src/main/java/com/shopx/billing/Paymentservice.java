@@ -1,22 +1,26 @@
 package com.shopx.billing;
 
 import com.shopx.billing.core.DefaultFilter;
+import com.shopx.billing.core.FindResourceOption;
 import com.shopx.billing.core.ResourceService;
-import com.shopx.billing.core.enums.PaymentMethod;
-import com.shopx.billing.core.enums.PaymentStatus;
+import com.shopx.common.enums.PaymentMethod;
+import com.shopx.common.enums.PaymentStatus;
 import com.shopx.billing.dto.PaymentRequestDto;
 import com.shopx.billing.dto.PaymentUpdateDto;
 import com.shopx.billing.exception.NotFoundException;
+import com.shopx.billing.kafka.PaymentEventPublisher;
 import com.shopx.billing.processor.PaymentProcessor;
 import com.shopx.billing.processor.PaymentProcessorFactory;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,7 +36,9 @@ import java.util.Optional;
 public class Paymentservice extends ResourceService<Payment> {
 
     private final PaymentRepository paymentRepository;
-//    private final PaymentProcessorFactory factory;
+
+    @Lazy
+    private final PaymentProcessorFactory factory;
 
     @Override
     protected Class<Payment> getEntityType() {
@@ -132,6 +138,51 @@ public class Paymentservice extends ResourceService<Payment> {
         if(payment==null) throw new NotFoundException("Payment record not found with id : "+paymentId);
 
         Payment updated = this.update(paymentId,PaymentMapper.toMap(dto), Optional.empty());
+        return updated;
+    }
+
+    public Payment updateStatus(
+            Long orderId,
+            Long customerId,
+            String transactionId,
+            PaymentStatus paymentStatus
+    ){
+
+        List<Payment> payments  = findResources(
+                PaymentFilter.builder()
+                        .orderId(orderId)
+                        .customerId(customerId)
+                        .build(),
+                FindResourceOption.builder().build(),
+                DefaultFilter.builder().build()
+        ).getData();
+
+        if(payments==null || payments.isEmpty())
+            throw new NotFoundException("Payment failed.");
+
+        Payment payment = payments.getFirst();
+
+        if(!payment.getStatus().equals(PaymentStatus.PENDING))
+            throw new NotFoundException("Payment not found.");
+
+        Payment updated = this.update(payment.getId(),Map.of("status",paymentStatus),Optional.empty());
+
+        PaymentProcessor processor = factory.getProcessor(paymentStatus);
+
+        processor.process(
+                com.shopx.common.event.PaymentEvent.builder()
+                        .orderId(orderId)
+                        .customerId(customerId)
+                        .paymentMethod(payment.getPaymentMethod())
+                        .status(paymentStatus)
+                        .topic("payment-events")
+                        .paymentId(payment.getId())
+                        .transactionId(transactionId)
+                        .amount(payment.getAmount())
+                        .currency("INR")
+                        .build()
+        );
+
         return updated;
     }
 

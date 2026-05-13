@@ -10,5 +10,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long>, JpaSpec
 
     Optional<Payment> findByOrderId(Long orderId);
 
-    boolean existsByOrderIdAndStatus(Long orderId, com.shopx.billing.core.enums.PaymentStatus status);
+    boolean existsByOrderIdAndStatus(Long orderId, com.shopx.common.enums.PaymentStatus status);
 }

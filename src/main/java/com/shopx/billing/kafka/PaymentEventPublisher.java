@@ -1,8 +1,9 @@
-package com.shopx.billing;
+package com.shopx.billing.kafka;
 
-import com.shopx.billing.core.enums.PaymentMethod;
-import com.shopx.billing.core.enums.PaymentStatus;
 import com.shopx.billing.Payment;
+import com.shopx.common.enums.PaymentMethod;
+import com.shopx.common.enums.PaymentStatus;
+import com.shopx.common.event.PaymentEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,12 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+@RequiredArgsConstructor
 @Slf4j
 @Component
 public class PaymentEventPublisher {
 
-    @Autowired
-    private KafkaTemplate<String, PaymentEvent> kafkaTemplate;
+    private final KafkaTemplate<String, PaymentEvent> kafkaTemplate;
 
     @Value("${kafka.topic.payment-success:payment.success}")
     private String paymentSuccessTopic;
@@ -26,14 +27,14 @@ public class PaymentEventPublisher {
     @Value("${kafka.topic.payment-failed:payment.failed}")
     private String paymentFailedTopic;
 
-    public void publish(Payment payment) {
+ /*   public void publish(Payment payment) {
         PaymentEvent event = PaymentEvent.builder()
                 .paymentId(payment.getId())
                 .orderId(payment.getOrderId())
                 .customerId(payment.getCustomerId())
                 .amount(payment.getAmount())
                 .currency(payment.getCurrency())
-                .status(payment.getStatus())
+//                .status(payment.getStatus())
                 .transactionId(payment.getTransactionId())
                 .failureReason(payment.getFailureReason())
                 .occurredAt(LocalDateTime.now(ZoneOffset.UTC))
@@ -48,7 +49,7 @@ public class PaymentEventPublisher {
             kafkaTemplate.send(paymentFailedTopic, String.valueOf(payment.getOrderId()), event);
             log.info("Published payment.failed event for orderId: {}", payment.getOrderId());
         }
-    }
+    }*/
 
     public String test(){
         kafkaTemplate.send("testing","test-1",
@@ -62,6 +63,11 @@ public class PaymentEventPublisher {
                         .paymentMethod(PaymentMethod.UPI)
                         .build());
         return "sent";
+    }
+
+    public void publish(PaymentEvent event){
+        kafkaTemplate.send(event.getTopic(),"payment-group",event);
+        log.info("payment {} event sent",event.getStatus());
     }
 
 }

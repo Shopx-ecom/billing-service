@@ -1,7 +1,14 @@
-package com.shopx.billing;
+package com.shopx.billing.kafka;
 
+import com.shopx.billing.Payment;
+import com.shopx.billing.Paymentservice;
+import com.shopx.billing.exception.NotFoundException;
 import com.shopx.billing.processor.PaymentProcessor;
 import com.shopx.billing.processor.PaymentProcessorFactory;
+import com.shopx.common.enums.PaymentMethod;
+import com.shopx.common.enums.PaymentStatus;
+import com.shopx.common.event.OrderEvent;
+import com.shopx.common.event.PaymentEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -18,8 +25,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaymentEventConsumer {
 
-    private final PaymentProcessorFactory paymentProcessorFactory;
-
+    private final Paymentservice paymentService;
+/*
     @KafkaListener(
             topics = "testing",
             groupId = "payment-group"
@@ -29,17 +36,28 @@ public class PaymentEventConsumer {
         PaymentProcessor processor = paymentProcessorFactory.getProcessor(event.getStatus());
         processor.process(event);
         log.info("Event consumed : {}",event);
-    }
+    }*/
 
     @KafkaListener(
             topics = "order-events",
             groupId = "payment-group"
     )
-    public void consumeOrderEvent(OrderEvent event){
+    public void consumeOrderEvent(OrderEvent orderEvent){
 
-        PaymentProcessor processor = paymentProcessorFactory.getProcessor(event.getStatus());
-        processor.process(event);
-        log.info("Event consumed : {}",event);
+        if(orderEvent.getEventType()!=null && orderEvent.getEventType().equals("order-created")) {
+            Payment payment = Payment.builder()
+                    .orderId(orderEvent.getOrderId())
+                    .customerId(orderEvent.getCustomerId())
+                    .status(PaymentStatus.PENDING)
+                    .amount(orderEvent.getTotalAmount())
+                    .currency("INR")
+                    .paymentMethod(null)
+                    .build();
+
+            Payment paymentStored = paymentService.create(payment);
+            log.info("Event consumed : {}",orderEvent);
+
+        }
     }
 
 }

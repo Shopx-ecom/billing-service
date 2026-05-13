@@ -1,8 +1,7 @@
 package com.shopx.billing.processor;
 
-import com.shopx.billing.Payment;
-import com.shopx.billing.PaymentEvent;
-import com.shopx.billing.core.enums.PaymentStatus;
+import com.shopx.common.enums.PaymentStatus;
+import com.shopx.common.event.PaymentEvent;
 
 public interface PaymentProcessor {
 
