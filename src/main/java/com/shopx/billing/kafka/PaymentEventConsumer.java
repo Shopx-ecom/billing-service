@@ -24,13 +24,22 @@ public class PaymentEventConsumer {
             topics = "testing",
             groupId = "payment-group"
     )
-    public void consume(PaymentEvent event){
+    public void test(PaymentEvent event){
 
         PaymentProcessor processor = paymentProcessorFactory.getProcessor(event.getStatus());
         processor.process(event);
         log.info("Event consumed : {}",event);
     }
 
+    @KafkaListener(
+            topics = "order-events",
+            groupId = "payment-group"
+    )
+    public void consumeOrderEvent(OrderEvent event){
 
+        PaymentProcessor processor = paymentProcessorFactory.getProcessor(event.getStatus());
+        processor.process(event);
+        log.info("Event consumed : {}",event);
+    }
 
 }
