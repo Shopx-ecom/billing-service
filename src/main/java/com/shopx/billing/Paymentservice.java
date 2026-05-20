@@ -162,9 +162,6 @@ public class Paymentservice extends ResourceService<Payment> {
 
         Payment payment = payments.getFirst();
 
-        if(!payment.getStatus().equals(PaymentStatus.PENDING))
-            throw new NotFoundException("Payment not found.");
-
         Payment updated = this.update(payment.getId(),Map.of("status",paymentStatus),Optional.empty());
 
         PaymentProcessor processor = factory.getProcessor(paymentStatus);

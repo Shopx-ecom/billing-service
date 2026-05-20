@@ -44,7 +44,10 @@ public class PaymentEventConsumer {
     )
     public void consumeOrderEvent(OrderEvent orderEvent){
 
-        if(orderEvent.getEventType()!=null && orderEvent.getEventType().equals("order-created")) {
+        if(orderEvent.getEventType()!=null)
+            return;
+
+        if(orderEvent.getEventType().equals("order-created")) {
             Payment payment = Payment.builder()
                     .orderId(orderEvent.getOrderId())
                     .customerId(orderEvent.getCustomerId())
@@ -57,7 +60,15 @@ public class PaymentEventConsumer {
             Payment paymentStored = paymentService.create(payment);
             log.info("Event consumed : {}",orderEvent);
 
+        }else if(orderEvent.getEventType().equals("order-cancelled")){
+            paymentService.updateStatus(
+                    orderEvent.getOrderId(),
+                    orderEvent.getCustomerId(),
+                    null,
+                    PaymentStatus.CANCELLED
+            );
         }
+
     }
 
 }

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -31,6 +32,7 @@ public class PaymentController {
         return paymentEventPublisher.test();
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping("/update/status")
     public ResponseEntity<PaymentResponseDto> pay(
             @RequestParam Long orderId,
